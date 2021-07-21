@@ -1,0 +1,9 @@
+*.zip
+node_modules
+
+client/build
+
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/dictionaries
+.idea/shelf
