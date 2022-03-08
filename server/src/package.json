@@ -1,0 +1,19 @@
+{
+  "name": "@bomb/server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "nikitka",
+  "license": "ISC",
+  "dependencies": {
+    "@bomb/shared": "file:../../shared",
+    "@geckos.io/client": "^2.1.3",
+    "@geckos.io/server": "^2.1.3",
+    "@geckos.io/snapshot-interpolation": "^1.0.2",
+    "express": "^4.17.1"
+  }
+}
