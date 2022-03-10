@@ -62,7 +62,7 @@ const watch_all = cb => {
     watch('./src/**/*.js', series(rollup, dev_server_reload))
     watch(['./index.html'], series(deploy_html, dev_server_reload))
     // watch(['./favicon/**/*'], series(deploy_favicon, dev_server_reload))
-    watch(['../server/reload_seed'], dev_server_reload)
+    watch(['../server/reload_seed'], series(rollup, dev_server_reload))
     // watch('css/**/*.styl', series(deploy_styles, dev_server_reload))
     // watch('assets/**/*', series(deploy_assets, dev_server_reload))
     cb()

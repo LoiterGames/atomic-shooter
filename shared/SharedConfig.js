@@ -24,6 +24,7 @@ export const SharedConfig = {
 
     DEBUG_REMOTE : {
         DEBUG_LOSS : 0,
+
         DEBUG_LATENCY: [0, 0],
         URL : 'https://nikitka.live',
         PORT : 9208,
@@ -38,6 +39,6 @@ export const SharedConfig = {
         const setup = this[env]
         Object.assign(this, setup)
 
-        console.log(`starting up with ENV:${this.ENV}`)
+        console.log(`starting up with ENV:${this.ENV}!`)
     }
 }

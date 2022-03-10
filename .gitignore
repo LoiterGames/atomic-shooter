@@ -3,6 +3,7 @@ node_modules
 
 client/build
 server/shooter-bundle
+server/reload_seed
 
 .idea/**/workspace.xml
 .idea/**/tasks.xml
