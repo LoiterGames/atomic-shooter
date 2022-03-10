@@ -2,6 +2,7 @@
 node_modules
 
 client/build
+server/shooter-bundle
 
 .idea/**/workspace.xml
 .idea/**/tasks.xml

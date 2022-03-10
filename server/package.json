@@ -10,7 +10,6 @@
   "license": "ISC",
   "devDependencies": {
     "del": "^6.0.0",
-    "gulp": "^4.0.2",
-    "gulp-change-file-content": "^1.0.1"
+    "gulp": "^4.0.2"
   }
 }

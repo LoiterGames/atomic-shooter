@@ -1,11 +1,40 @@
 const fs = require('fs')
 const del = require('del')
-const change = require('gulp-change-file-content')
 const {src, watch, dest, series, parallel, task, log} = require('gulp')
 const spawn = require('child_process').spawn
 let node = null
 
-const server = cb => {
+const remote_rsync = cb => {
+    del.sync('./shooter-bundle', {force : true})
+
+    src(['./**/*', '!node_modules/**', '!src/node_modules/**', '!reload_seed'])
+        .pipe(dest('./shooter-bundle/server'))
+
+    src(['../shared/**/**']).pipe(dest('./shooter-bundle/shared'))
+
+    // const copyTask = spawn('scp', ['-r', './shooter-bundle', 'working-dog:~/'], {stdio : 'inherit'})
+    // copyTask.on('close', code => {
+    //     cb()
+    // })
+    // return copyTask
+
+    const copyTask = spawn('rsync', ['-av', './shooter-bundle', 'working-dog:~/'], {stdio : 'inherit'})
+    copyTask.on('close', code => {
+        cb()
+    })
+    return copyTask
+}
+
+const remote_watch = cb => {
+    watch('./src/**/*.js', series(remote_rsync))
+    watch('../shared/**/*.js', series(remote_rsync, local_reload_client))
+
+    cb()
+}
+
+exports.prepare_package = remote_rsync
+
+const local_server = cb => {
     if (node) node.kill()
     node = spawn('node', ['src/server.js'], {stdio: 'inherit'})
     node.on('close', function (code) {
@@ -16,28 +45,20 @@ const server = cb => {
     cb()
 }
 
-const reload_client = cb => {
+const local_reload_client = cb => {
     fs.writeFileSync('./reload_seed', Math.random().toString(), {encoding : "utf8"})
     cb()
 }
 
-const copy_shared = async () => {
-    // await del(['../client/src/gen-shared'], {force : true})
-    // fs.mkdirSync('../client/src/gen-shared')
-    // return src(['./shared/**/*']).pipe(dest('../client/src/gen-shared'))
-}
-
-const watch_source = cb => {
-    watch('./src/**/*.js', series(server, reload_client))
-    watch('../shared/**/*.js', series(server, reload_client))
+const local_watch = cb => {
+    watch('./src/**/*.js', series(local_server, local_reload_client))
+    watch('../shared/**/*.js', series(local_server, local_reload_client))
 
     cb()
 }
 
-exports.server = server
-exports.reload_client = reload_client
-exports.copy_shared = copy_shared
-exports.default = series(server, copy_shared, watch_source)
+exports.start_local = series(local_server, local_watch)
+exports.start_remote = series(remote_rsync, remote_watch)
 
 process.on('exit', function() {
     if (node) node.kill()

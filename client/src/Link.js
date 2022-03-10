@@ -1,5 +1,5 @@
 import {SnapshotInterpolation, Vault} from "@geckos.io/snapshot-interpolation";
-import SharedConfig from "@bomb/shared/SharedConfig";
+import {SharedConfig} from "@bomb/shared/SharedConfig";
 import geckosClient from "@geckos.io/client";
 import {Actor, MessageType} from "@bomb/shared/PROTOC";
 import {Emitter} from "./util/Emitter";
@@ -24,7 +24,9 @@ export default class Link {
 
         Object.assign(this, Emitter())
 
+        // console.log(SharedConfig)
         this._channel = geckosClient({
+            url : SharedConfig.URL,
             port : SharedConfig.PORT
         })
 

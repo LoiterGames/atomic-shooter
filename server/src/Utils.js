@@ -1,4 +1,4 @@
-import SharedConfig from "@bomb/shared/SharedConfig.js";
+import {SharedConfig} from "@bomb/shared/SharedConfig.js";
 
 export const addLatencyAndPackagesLoss = () => {
     return new Promise(resolve => {
@@ -21,5 +21,6 @@ export const handlePlayer = (map, id, message) => {
 
     console.error(`player with id ${id} was not found, will skip message ${message}`)
 
+    //puk puk
     return undefined
 }

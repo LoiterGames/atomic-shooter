@@ -1,18 +1,37 @@
-import {addLatencyAndPackagesLoss, handlePlayer} from './Utils.js'
+import http from 'http'
+import https from 'https'
+import fs from 'fs'
+import express from 'express'
+import geckos, {iceServers} from "@geckos.io/server";
+import {SnapshotInterpolation} from "@geckos.io/snapshot-interpolation";
 
+import {addLatencyAndPackagesLoss, handlePlayer} from './Utils.js'
 import GP from '@bomb/shared/GP.js'
-import SharedConfig from "@bomb/shared/SharedConfig.js";
+import {SharedConfig} from "@bomb/shared/SharedConfig.js";
 import {MessageType, ActorType, Actor} from "@bomb/shared/PROTOC.js";
 
-import {SnapshotInterpolation} from "@geckos.io/snapshot-interpolation";
-import geckos from "@geckos.io/server";
+SharedConfig.init('DEBUG_REMOTE')
 
-import http from 'http'
-import express from 'express'
+console.log(JSON.stringify(SharedConfig, null, 2))
+
+
 const app = express()
-const server = http.createServer(app)
 
-const G = geckos()
+let server
+let ice = []
+if (SharedConfig.ENV === 'DEBUG_LOCAL') {
+    server = http.createServer(app)
+} else if (SharedConfig.ENV === 'DEBUG_REMOTE') {
+    ice = iceServers
+    server = https.createServer({
+        key : fs.readFileSync(SharedConfig.SSL_KEY, 'utf-8'),
+        cert : fs.readFileSync(SharedConfig.SSL_CERT, 'utf-8'),
+        ca : fs.readFileSync(SharedConfig.SSL_CA, 'utf-8'),
+    }, app)
+}
+
+console.log('ice servers: ', ice)
+const G = geckos({iceServers : ice})
 const SI = new SnapshotInterpolation()
 
 /** @type {Map<Types.ChannelId, Actor>} */
@@ -28,7 +47,7 @@ G.addServer(server)
 // G.listen(ServerConfig.PORT)
 
 G.onConnection(channel => {
-    console.log(`connected : ${channel.id}`)
+    console.log(`now connected : ${channel.id}`)
 
     players.set(channel.id, Actor.createPlayer(Math.random() * 5 - 2.5, Math.random() * 5 - 2.5))
 
@@ -128,7 +147,9 @@ const loop = () => {
     }
 }
 
-server.listen(SharedConfig.PORT)
+server.listen(SharedConfig.PORT, () => {
+    console.log(`server launch success on port ${SharedConfig.PORT}`)
+})
 
 // server calculates position at 60 fps
 // but sends a snapshot at 15 fps (to save bandwidth)

@@ -3,7 +3,9 @@ import Link from "./Link";
 import {MessageType} from "@bomb/shared/PROTOC";
 import {Vault} from "@geckos.io/snapshot-interpolation";
 import GP from "@bomb/shared/GP";
-import SharedConfig from "@bomb/shared/SharedConfig";
+import {SharedConfig} from "@bomb/shared/SharedConfig";
+
+SharedConfig.init('DEBUG_REMOTE')
 
 // let localSelf = null
 const localVault = new Vault()
