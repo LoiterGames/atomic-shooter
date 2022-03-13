@@ -75,6 +75,8 @@ const createFile = async (stream, name, parent) => {
 const writeFileWithMetadata = (fileContents, assetId, relativePath) => {
     if (fileContents.indexOf('//assetId=') === -1) {
         fileContents = `//assetId=${assetId}\n` + fileContents
+    } else {
+        fileContents = fileContents.replace(/\/\/assetId=\d+\n/, `//assetId=${assetId}\n`)
     }
     fs.writeFileSync(relativePath, fileContents)
 }
@@ -239,8 +241,9 @@ exports['watch-all'] = async () => {
         // if (path.contains('ReloadBySwap')) return;
 
         const file = fs.readFileSync(path, {encoding: 'utf-8'})
-        const match = file.match(/^\/\/assetId=.+/)[0]
-        const assetId = match.split('=')[1]
+        const match = file.match(/^\/\/assetId=.+/)
+        if (match === null) return;
+        const assetId = match[0].split('=')[1]
 
         if (assetId === config.swap_file_id) return;
 
@@ -251,7 +254,17 @@ exports['watch-all'] = async () => {
 
         clearTimeout(timeout)
 
-        list.push([assetId, path])
+        let needToPush = true
+        for (let i = 0; i < list.length; i++) {
+            if (list[i][0] === assetId) {
+                needToPush = false
+                break
+            }
+        }
+
+        if (needToPush) {
+            list.push([assetId, path])
+        }
 
         timeout = setTimeout(writeAllChanges, 200)
 

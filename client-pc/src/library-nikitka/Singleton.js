@@ -1,4 +1,4 @@
-//assetId=68146899
+//assetId=72334831
 //jshint asi: true
 //# sourceURL=Singleton.js
 const Singleton = {
@@ -31,39 +31,28 @@ const Singleton = {
 //
 // CONCRETE TYPES BELOW
 //
-    /**@type Link*/
+
+    /**
+     * @return {Link}
+     */
     get link() {
         this._checkCache()
         return this._get('link')
     },
-    //
-    // /**@type {Uicomposer}*/
-    // get composer() {
-    //     this._checkCache()
-    //     return this._get('uicomposer')
-    // },
-    //
-    // /**@type {BunnyDrag}*/
-    // get bunnyDrag() {
-    //     this._checkCache()
-    //     return this._get('bunnyDrag')
-    // },
-    //
-    // /**@type {CameraMenu}*/
-    // get cameraMenu() {
-    //     this._checkCache()
-    //     return this._get('cameraMenu')
-    // },
-    //
-    // /**@type {VehicleSelector}*/
-    // get vehicleSelector() {
-    //     this._checkCache()
-    //     return this._get('vehicleSelector')
-    // },
-    //
-    // /**@type {UiunlockWidget}*/
-    // get unlockWidget() {
-    //     this._checkCache()
-    //     return this._get('uiunlockWidget')
-    // }
+
+    /**
+     * @return {TouchInput}
+     */
+    get input() {
+        this._checkCache()
+        return this._get('touchInput')
+    },
+
+    /**
+     * @return {EntrySession}
+     */
+    get session() {
+        this._checkCache()
+        return this._get('entrySession')
+    },
 }

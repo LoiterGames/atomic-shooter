@@ -1,4 +1,4 @@
-//assetId=68146887
+//assetId=72334822
 var RenderCameraTotexture = pc.createScript('renderCameraTotexture');
 RenderCameraTotexture.attributes.add('scale', {type: 'number', default: 1.0});
 RenderCameraTotexture.attributes.add('elementEntity', {type: 'entity', description: 'The element image that will display the render target'});

@@ -1,4 +1,4 @@
-//assetId=68146907
+//assetId=72334832
 var UIComposition = {
     MENU_MAIN : 'MENU_MAIN',
     MENU_SELECT : 'MENU_SELECT'

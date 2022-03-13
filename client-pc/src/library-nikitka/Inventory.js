@@ -1,4 +1,4 @@
-//assetId=68146895
+//assetId=72334828
 //jshint asi: true
 //# sourceURL=Inventory.js
 const SAVE_KEY = "harvest-game-rnd"

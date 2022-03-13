@@ -1,4 +1,4 @@
-//assetId=68146908
+//assetId=72334833
 //jshint asi: true
 //# sourceURL=UIComposerButton.js
 var UicomposerButton = pc.createScript('uicomposerButton');

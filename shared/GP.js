@@ -1,5 +1,5 @@
-export default class GP {
-    static player = {
+export const GP = {
+    player : {
         speed : 1.5
     }
 }

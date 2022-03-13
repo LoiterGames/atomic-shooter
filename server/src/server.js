@@ -6,7 +6,7 @@ import geckos, {iceServers} from "@geckos.io/server";
 import {SnapshotInterpolation} from "@geckos.io/snapshot-interpolation";
 
 import {addLatencyAndPackagesLoss, handlePlayer} from './Utils.js'
-import GP from '@bomb/shared/GP.js'
+import {GP} from '@bomb/shared/GP.js'
 import {SharedConfig} from "@bomb/shared/SharedConfig.js";
 import {MessageType, ActorType, Actor} from "@bomb/shared/PROTOC.js";
 
@@ -41,6 +41,7 @@ const bombs = new Map()
 /** @type {Map<string, Actor>} */
 const pickups = new Map()
 
+
 let tick = 0
 
 G.addServer(server)
@@ -49,7 +50,7 @@ G.addServer(server)
 G.onConnection(channel => {
     console.log(`now connected : ${channel.id}`)
 
-    players.set(channel.id, Actor.createPlayer(Math.random() * 5 - 2.5, Math.random() * 5 - 2.5))
+    players.set(channel.id, Actor.createPlayer(Math.random() * 5 - 2.5, 0, Math.random() * 5 - 2.5))
 
     G.emit(MessageType.PLAYER_ADD, {id : channel.id, actor : players.get(channel.id)}, {reliable : true})
 
@@ -73,7 +74,7 @@ G.onConnection(channel => {
 
         // console.log(`velocity: ${channel.id}: ${data[0]}:${data[1]}`)
         player.vx = data[0]
-        player.vy = data[1]
+        player.vz = data[1]
     })
 
     channel.on(MessageType.THROW, async data => {
@@ -124,7 +125,7 @@ const loop = () => {
     // update world (physics etc.)
     players.forEach(player => {
         player.x += player.vx * GP.player.speed * dt
-        player.y += player.vy * GP.player.speed * dt
+        player.z += player.vz * GP.player.speed * dt
 
         // player.vx = player.vy = 0
     })
@@ -136,7 +137,7 @@ const loop = () => {
             worldState.push({
                 id: key,
                 x: Math.floor(player.x*1000)/1000,//player.x.toFixed(2),
-                y: Math.floor(player.y*1000)/1000
+                z: Math.floor(player.z*1000)/1000
             })
 
         })

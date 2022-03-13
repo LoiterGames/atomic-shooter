@@ -1,4 +1,4 @@
-//assetId=68146910
+//assetId=72334827
 //jshint asi: true
 //# sourceURL=UIFullscreenButton.js
 var UifullscreenButton = pc.createScript('uifullscreenButton');

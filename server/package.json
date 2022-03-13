@@ -9,7 +9,13 @@
   "author": "nikitka",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.17.5",
+    "@babel/preset-env": "^7.15.0",
+    "@rollup/plugin-babel": "^5.3.1",
     "del": "^6.0.0",
-    "gulp": "^4.0.2"
+    "gulp": "^4.0.2",
+    "gulp-change-file-content": "^1.0.1",
+    "gulp-rename": "^2.0.0",
+    "rollup": "^2.70.0"
   }
 }

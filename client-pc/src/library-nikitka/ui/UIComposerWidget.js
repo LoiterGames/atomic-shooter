@@ -1,4 +1,4 @@
-//assetId=68146909
+//assetId=72334834
 const UIComposerBehaviour = {
     SIMPLE : 'SIMPLE',
     FADE : 'FADE',

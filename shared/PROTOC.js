@@ -1,18 +1,18 @@
-export class MessageType {
-    static MOVE = 'MOVE'
-    static THROW = 'THROW'
-    static PLAYER_REMOVE = 'PLAYER_REMOVE'
-    static PLAYER_ADD = 'PLAYER_ADD'
-    static SNAPSHOT = 'SNAPSHOT'
+export const MessageType = {
+    MOVE : 'MOVE',
+    THROW : 'THROW',
+    PLAYER_REMOVE : 'PLAYER_REMOVE',
+    PLAYER_ADD : 'PLAYER_ADD',
+    SNAPSHOT : 'SNAPSHOT',
 }
 
-export class ActorType {
-    static UNKNOWN = 'UNKNOWN'
-    static PLAYER = 'PLAYER'
-    static OBSTACLE = 'OBSTACLE'
+export const ActorType = {
+    UNKNOWN : 'UNKNOWN',
+    PLAYER : 'PLAYER',
+    OBSTACLE : 'OBSTACLE',
 
-    static PICKUP= 'PICKUP'
-    static BOMB = 'BOMB'
+    PICKUP : 'PICKUP',
+    BOMB : 'BOMB'
 }
 
 export class Actor {

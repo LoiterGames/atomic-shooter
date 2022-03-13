@@ -1,5 +1,6 @@
 const fs = require('fs')
 const del = require('del')
+const rename = require('gulp-rename')
 const {src, watch, dest, series, parallel, task, log} = require('gulp')
 const spawn = require('child_process').spawn
 let node = null
@@ -25,9 +26,43 @@ const remote_rsync = cb => {
     return copyTask
 }
 
+const pack_shared = async () => {
+    const write_dir = '../client-pc/src'
+
+    /**
+     * @type {String}
+     */
+    const assetId = fs.readFileSync(write_dir + '/Shared.js', {encoding : "utf8"}).match(/\/\/assetId=\d+/)[0]
+
+    console.log(assetId)
+
+    const {babel} = require('@rollup/plugin-babel')
+    const bundle  = await require('rollup').rollup({
+        input : '../shared/index.js',
+        plugins : [
+            babel({
+                presets : [['@babel/preset-env']],
+                babelHelpers : 'bundled'
+            })
+        ],
+    })
+
+    await bundle.write({
+        file : './temp-shared.js',
+        format : 'cjs'
+    })
+
+    await src('./temp-shared.js').pipe(require('gulp-change-file-content')((content) => {
+        return assetId + '\n' + content.replace(/.*exports.+\;/gi, '//--')
+    })).pipe(rename('Shared.js')).pipe(dest(write_dir))
+
+    return del('./temp-shared.js')
+}
+exports['pack-shared'] = pack_shared
+
 const remote_watch = cb => {
-    watch('./src/**/*.js', series(remote_rsync))
-    watch('../shared/**/*.js', series(remote_rsync, local_reload_client))
+    watch('./src/**/*.js', series(remote_rsync, local_reload_client))
+    watch('../shared/**/*.js', series(remote_rsync, pack_shared))
 
     cb()
 }
@@ -58,7 +93,7 @@ const local_watch = cb => {
 }
 
 exports.start_local = series(local_server, local_watch)
-exports.start_remote = series(remote_rsync, remote_watch)
+exports.start_remote = series(remote_rsync, pack_shared, remote_watch)
 
 process.on('exit', function() {
     if (node) node.kill()
