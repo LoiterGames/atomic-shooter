@@ -111,7 +111,8 @@ var GP = {
 var SharedConfig = {
   TARGET_FPS: 60,
   FRAME_LENGTH: 1 / 60,
-  RECONSILE_EPSILON: 0.01,
+  RECONSILE_DELTA: 30,
+  // will reconsile with the speed of (1/delta)/sec
   ENV: 'UNKNOWN',
   DEBUG_LOSS: 0,
   DEBUG_LATENCY: [20, 50],

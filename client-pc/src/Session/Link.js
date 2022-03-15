@@ -5,6 +5,10 @@ const Link = pc.createScript('link');
 Link.prototype.start = function() {
 
     this.SI = new Snap.SnapshotInterpolation(SharedConfig.TARGET_FPS/SharedConfig.FRAME_SKIP)
+
+    /**
+     * @type {Map<string, Actor>}
+     */
     this.players = new Map()
     this.connected = false
 

@@ -13,7 +13,7 @@ TouchInput.attributes.add('deadZone', {type : 'number'})
 TouchInput.attributes.add('controlsEnabled', {type : 'boolean'})
 
 TouchInput.prototype.initialize = function() {
-    this.input = new pc.Vec2(0, 1)
+    this.input = new pc.Vec2(0, 0)
     
     this._device = this.app.graphicsDevice
     var d = this.app.graphicsDevice
@@ -44,7 +44,7 @@ TouchInput.prototype.initialize = function() {
                 event.event.stopImmediatePropagation();
                 this.dragging = false
                 this.vPointer.setLocalPosition(this.pointerAnchor.getLocalPosition())
-                // this.input.set(0, 0)
+                this.input.set(0, 0)
                 
             }, this)
 
@@ -161,8 +161,9 @@ TouchInput.prototype._endDrag = function(e) {
     // e.event.preventDefault()
     this.dragging = false
     this.vPointer.setLocalPosition(this.pointerAnchor.getLocalPosition())
-    // this.input.set(0, 0)
+    this.input.set(0, 0)
 }
+
 
 // update code called every frame
 TouchInput.prototype.manualUpdate = function(dt) {
@@ -201,13 +202,13 @@ TouchInput.prototype.manualUpdate = function(dt) {
     if (len > this.maxDrag) {
         offset.normalize().scale(this.maxDrag)
         this.vPointer.setLocalPosition(anchorPos.x + offset.x, anchorPos.y + offset.y, 0)
-        this.input.set(offset.y, offset.x).normalize()
+        this.input.set(-offset.x, offset.y).normalize()
     } else if (len < this.deadZone) {
         this.vPointer.setLocalPosition(this.pointerAnchor.getLocalPosition())
         // this.input.set(0, 0)
     } else {
         this.vPointer.setLocalPosition(anchorPos.x + offset.x, anchorPos.y + offset.y, 0)
-        this.input.set(offset.y, offset.x).normalize()
+        this.input.set(-offset.x, offset.y).normalize()
     }
     
     if (Number.isNaN(this.input.x) || Number.isNaN(this.input.y)) {

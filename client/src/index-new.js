@@ -44,6 +44,7 @@ window.onload = async () => {
         const serverSnapshot = link.SI.vault.get()
         if (!serverSnapshot) return;
 
+ы
         const localSnapshot = localVault.get(serverSnapshot.time, true)
         if (!localSnapshot) return;
 

@@ -30,8 +30,8 @@ if (SharedConfig.ENV === 'DEBUG_LOCAL') {
     }, app)
 }
 
-console.log('ice servers: ', ice)
-const G = geckos({iceServers : ice})
+// console.log('ice servers: ', ice)
+const G = geckos()
 const SI = new SnapshotInterpolation()
 
 /** @type {Map<Types.ChannelId, Actor>} */

@@ -44,8 +44,8 @@ var Gizmo = {
 
     line : function(from, to, color) {
 
-        if (Helper.reloading) return;
-        if (!Helper.main.gizmos) return;
+        // if (Helper.reloading) return;
+        // if (!Helper.main.gizmos) return;
 
         pc.app.renderLine(from, to, color, this.layerObj)
     },

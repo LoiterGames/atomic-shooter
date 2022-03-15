@@ -1,20 +1,19 @@
 //assetId=72325429
 //jshint asi: true
 //# sourceURL=CamLook.js
-var CamLook = pc.createScript('camLook');
+const CamLook = pc.createScript('camLook');
 
-CamLook.attributes.add('autoStart', {type : 'boolean'})
-CamLook.attributes.add('target', {type : 'entity'})
-CamLook.attributes.add('boom', {type : 'vec3'});
-
-CamLook.attributes.add('maxDistanceX', {type : 'number'});
-CamLook.attributes.add('maxDistanceY', {type : 'number'});
-CamLook.attributes.add('maxDistanceZ', {type : 'number'});
-CamLook.attributes.add('fromToSpeedCurve', {type : 'curve'});
-CamLook.attributes.add('fromToSpeed', {type : 'vec2'});
-
-CamLook.attributes.add('debugCamera', {type : 'entity'})
-CamLook.attributes.add('gameCamera', {type : 'entity'})
+CamLook.attributes.add('default', {type : 'number'})
+CamLook.attributes.add('setup', {
+    type : 'json', array : true,
+    schema : [
+        {name : 'target', type : 'entity'},
+        {name : 'boom', type : 'vec3'},
+        {name : 'maxDistance', type : 'vec3'},
+        {name : 'speedCurve', type : 'curve'},
+        {name : 'speed', type : 'vec2'},
+    ]
+})
 
 CamLook.prototype.start = function() {
     this.switchToGameCamera()
@@ -106,10 +105,3 @@ CamLook.prototype.manualUpdate = function(dt) {
 
     // this.entity.lookAt(this.target.getPosition())
 };
-
-// swap method called for script hot-reloading
-// inherit your script state here
-// CamLook.prototype.swap = function(old) { };
-
-// to learn more about script anatomy, please read:
-// http://developer.playcanvas.com/en/user-manual/scripting/

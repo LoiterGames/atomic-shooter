@@ -32,27 +32,26 @@ const Singleton = {
 // CONCRETE TYPES BELOW
 //
 
-    /**
-     * @return {Link}
-     */
-    get link() {
-        this._checkCache()
-        return this._get('link')
-    },
-
-    /**
-     * @return {TouchInput}
-     */
-    get input() {
-        this._checkCache()
-        return this._get('touchInput')
-    },
-
-    /**
-     * @return {EntrySession}
-     */
-    get session() {
-        this._checkCache()
-        return this._get('entrySession')
-    },
+    session : {
+        /** @return {EntrySession} */
+        get root() {
+            Singleton._checkCache()
+            return Singleton._get('entrySession')
+        },
+        /** @return {Link} */
+        get link() {
+            Singleton._checkCache()
+            return Singleton._get('link')
+        },
+        /** @return {TouchInput} */
+        get input() {
+            Singleton._checkCache()
+            return Singleton._get('touchInput')
+        },
+        /** @return {CamLook} */
+        get camera() {
+            Singleton._checkCache()
+            return Singleton._get('camLook')
+        },
+    }
 }
