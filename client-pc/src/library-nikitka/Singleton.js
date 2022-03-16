@@ -38,6 +38,11 @@ const Singleton = {
             Singleton._checkCache()
             return Singleton._get('entrySession')
         },
+        /** @return {Environment} */
+        get environment() {
+            Singleton._checkCache()
+            return Singleton._get('environment')
+        },
         /** @return {Link} */
         get link() {
             Singleton._checkCache()

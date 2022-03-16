@@ -105,13 +105,18 @@ _defineProperty(Actor, "createFromSnapshot", function (value) {
 var GP = {
   player: {
     speed: 1.5
+  },
+  environment: {
+    size: 5,
+    chunkScale: 4,
+    rotateFrequency: 5
   }
 };
 
 var SharedConfig = {
   TARGET_FPS: 60,
   FRAME_LENGTH: 1 / 60,
-  RECONSILE_DELTA: 30,
+  RECONSILE_DELTA: 10,
   // will reconsile with the speed of (1/delta)/sec
   ENV: 'UNKNOWN',
   DEBUG_LOSS: 0,

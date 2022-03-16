@@ -32,6 +32,8 @@ VisualPlayer.prototype.manualUpdate = function(nextX, nextZ) {
     // console.log(this.lastPos.distance(currentPos))
     if (this.lastPos.distance(currentPos) > 0.005) {
         this.animator.setBoolean('walk', true)
+        this.entity.lookAt(new pc.Vec3().add2(currentPos, dir.mulScalar(-1)))
+        Gizmo.line(currentPos, new pc.Vec3().add2(currentPos, dir.mulScalar(-1)), Gizmo.BLUE_GIZMO)
     } else {
         this.animator.setBoolean('walk', false)
     }
@@ -39,7 +41,5 @@ VisualPlayer.prototype.manualUpdate = function(nextX, nextZ) {
     this.entity.setPosition(currentPos)
     this.lastPos.set(nextX, 0, nextZ)
 
-    this.entity.lookAt(new pc.Vec3().add2(currentPos, dir.mulScalar(-1)))
 
-    Gizmo.line(currentPos, new pc.Vec3().add2(currentPos, dir), Gizmo.BLUE_GIZMO)
 }

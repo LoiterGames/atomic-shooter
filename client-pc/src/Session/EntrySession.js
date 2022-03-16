@@ -8,6 +8,8 @@ EntrySession.attributes.add('playerPrefab', {type : 'asset', assetType:'template
 // initialize code called once per entity
 EntrySession.prototype.postInitialize = function() {
 
+    Singleton.session.environment.start()
+
     /**
      * @type {Map<string, VisualPlayer>}
      */
@@ -32,8 +34,8 @@ EntrySession.prototype._prediction = function(dt) {
 
     if (!player) return;
 
-    player.x = player.x + this.input.input.x * GP.player.speed * dt
-    player.z = player.z + this.input.input.y * GP.player.speed * dt
+    player.x = player.x + this.input.velocity.x * this.input.power * GP.player.speed * dt
+    player.z = player.z + this.input.velocity.y * this.input.power * GP.player.speed * dt
 
     this.localVault.add(this.link.SI.snapshot.create([{
         id : this.link.channel.id,
@@ -75,7 +77,7 @@ EntrySession.prototype.update = function(dt) {
 
     Singleton.session.input.manualUpdate(dt)
 
-    this.link.channel.emit(MessageType.MOVE, [Singleton.session.input.input.x, Singleton.session.input.input.y])
+    this.link.channel.emit(MessageType.MOVE, [this.input.velocity.x * this.input.power, this.input.velocity.y * this.input.power])
 
     this._prediction(dt)
 
@@ -104,6 +106,7 @@ EntrySession.prototype.update = function(dt) {
             this.visualPlayers.set(id, playerE.script.visualPlayer)
             playerE.script.visualPlayer.start(x, z, isSelf)
         }
+
 
         this.visualPlayers.get(id).manualUpdate(x, z)
     }
