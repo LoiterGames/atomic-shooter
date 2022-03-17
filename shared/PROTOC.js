@@ -4,6 +4,9 @@ export const MessageType = {
     PLAYER_REMOVE : 'PLAYER_REMOVE',
     PLAYER_ADD : 'PLAYER_ADD',
     SNAPSHOT : 'SNAPSHOT',
+    ROTATE_WARNING : 'ROTATE_WARNING',
+    ROTATE_START : 'ROTATE_START',
+    ROTATE_END : 'ROTATE_END',
 }
 
 export const ActorType = {

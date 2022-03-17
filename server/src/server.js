@@ -9,6 +9,7 @@ import {addLatencyAndPackagesLoss, handlePlayer} from './Utils.js'
 import {GP} from '@bomb/shared/GP.js'
 import {SharedConfig} from "@bomb/shared/SharedConfig.js";
 import {MessageType, ActorType, Actor} from "@bomb/shared/PROTOC.js";
+import {SharedHelper} from "@bomb/shared/SharedHelper.js";
 
 SharedConfig.init('DEBUG_REMOTE')
 
@@ -43,6 +44,15 @@ const pickups = new Map()
 
 
 let tick = 0
+
+let rotateTimer = 0
+let rotateWarning = 0
+let rotating = false
+let rotateNextRow = -1
+let rotateNextCol = -1
+let rotateRow = []
+let rotateCol = []
+
 
 G.addServer(server)
 // G.listen(ServerConfig.PORT)
@@ -146,6 +156,59 @@ const loop = () => {
         SI.vault.add(snapshot)
         G.emit(MessageType.SNAPSHOT, snapshot)
     }
+
+    if (players.size < 1) {
+        rotateTimer = 0
+        return;
+    }
+
+    if (rotateTimer === 0 && !rotating) {
+        rotateNextCol = -1
+        rotateNextRow = -1
+
+        if (rotateCol.length === 0) {
+            rotateCol = SharedHelper.fill(0, GP.environment.size-1)
+        }
+        if (rotateRow.length === 0) {
+            rotateRow = SharedHelper.fill(0, GP.environment.size-1)
+        }
+
+        if (Math.random() > 0.5) {
+            rotateNextCol = rotateCol.splice(Math.floor(Math.random() * rotateCol.length), 1)[0]
+        } else {
+            rotateNextRow = rotateRow.splice(Math.floor(Math.random() * rotateRow.length), 1)[0]
+        }
+    }
+
+    rotateTimer += dt
+    if (rotating) {
+        if (rotateTimer > GP.environment.rotateTime) {
+            rotateTimer = 0
+            G.emit(MessageType.ROTATE_END, {}, {reliable : true})
+            rotating = false
+            rotateNextCol = -1
+            rotateNextRow = -1
+        }
+    } else {
+        const nextRotateWarning = GP.environment.rotateFrequency - GP.environment.rotateWarnings*GP.environment.rotateWarningTime + rotateWarning
+
+        if (rotateTimer > GP.environment.rotateFrequency) {
+            rotateTimer = 0
+            rotateWarning = 0
+            G.emit(MessageType.ROTATE_START, {
+                col : rotateNextCol,
+                row : rotateNextRow
+            }, {reliable : true})
+            rotating = true
+        } else if (rotateTimer > nextRotateWarning) {
+            rotateWarning++
+            G.emit(MessageType.ROTATE_WARNING, {
+                col : rotateNextCol,
+                row : rotateNextRow
+            }, {reliable : true})
+        }
+    }
+    // G.emit(MessageType.PLAYER_REMOVE, channel.id, {reliable : true})
 }
 
 server.listen(SharedConfig.PORT, () => {

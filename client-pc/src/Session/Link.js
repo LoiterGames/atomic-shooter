@@ -43,6 +43,25 @@ Link.prototype.start = function() {
     this.channel.on(MessageType.PLAYER_REMOVE, value => {
         this.entity.fire(MessageType.PLAYER_REMOVE, value)
     })
+
+    this.channel.on(MessageType.ROTATE_WARNING, value => {
+        Singleton.session.environment.onWarning(value.col, value.row)
+    })
+
+    this.channel.on(MessageType.ROTATE_START, value => {
+        // console.error('start rotation', value)
+        if (value.col > -1) {
+            Singleton.session.environment.rotateCol(value.col)
+        }
+        if (value.row > -1) {
+            Singleton.session.environment.rotateRow(value.row)
+        }
+    })
+
+    this.channel.on(MessageType.ROTATE_END, value => {
+        // console.error('end rotation')
+
+    })
 };
 
 // update code called every frame

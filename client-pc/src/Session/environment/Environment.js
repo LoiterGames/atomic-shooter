@@ -36,6 +36,7 @@ Environment.prototype.start = function() {
 
                 // console.log(`creating ${i}:${j}:${k}`)
 
+
                 /**
                  * @type {Entity}
                  */
@@ -48,10 +49,34 @@ Environment.prototype.start = function() {
                 // console.log(chunk.getPosition(), chunk.getLocalScale())
 
                 this.chunks[i + j * this.size + k * this.size*this.size] = chunk
+
+                chunk.script.chunk.start()
             }
         }
     }
-};
+}
+
+Environment.prototype.onWarning = function(col, row) {
+    console.log('will warn', col, row)
+    for (let i = 0; i < this.size; i++) {
+        for (let j = 0; j < this.size; j++) {
+            for (let k = 0; k < this.size; k++) {
+                if (i === col || k === row) {
+                    const child = this.chunks[i + j * this.size + k * this.size*this.size]
+
+                    if (!child) continue
+
+                    /**
+                     * @type Chunk
+                     */
+                    const chunkScript = child.script.chunk
+
+                    chunkScript.startWarning()
+                }
+            }
+        }
+    }
+}
 
 Environment.prototype.theReparent = function(child, parent2) {
     const mat = child.getWorldTransform().clone();
@@ -62,6 +87,10 @@ Environment.prototype.theReparent = function(child, parent2) {
     const scale = mat.getScale();
 
     child.reparent(parent2);
+
+    pos.x = Number.parseFloat(pos.x.toFixed(2))
+    pos.y = Number.parseFloat(pos.y.toFixed(2))
+    pos.z = Number.parseFloat(pos.z.toFixed(2))
 
     child.setLocalPosition(pos);
     child.setLocalRotation(rot);
@@ -109,10 +138,35 @@ Environment.prototype.rotateRow = function(target) {
 
     const euler = this.rotator.getLocalEulerAngles()
     this.tween = this.rotator.tween(euler)
-    this.tween.rotate(new pc.Vec3(euler.x, euler.y, euler.z + 90), 1, pc['cubicOut'])
-        .on('complete', function() {
-            this.tween = null
-        }, this).start()
+    this.tween.rotate(new pc.Vec3(euler.x, euler.y, euler.z + 90), 1, pc['BackOut'])
+        .on('complete', this._finishTween, this).start()
+}
+
+Environment.prototype._finishTween = function() {
+    this.tween = null
+
+    this.clearRotator()
+
+    const newChunks = []
+
+    const scale = GP.environment.chunkScale
+
+    for (let i = 0; i < this.chunks.length; i++) {
+        const chunk = this.chunks[i]
+        if (!chunk) continue
+
+        const pos = chunk.getPosition()
+        const x = Math.floor((pos.x - scale/2 + (this.size*scale)/2) / scale)
+        const y = Math.floor((pos.y - scale/2 + (this.size*scale)) / scale)
+        const z = Math.floor((pos.z - scale/2 + (this.size*scale)/2) / scale)
+        // console.log(pos, '->', x, y, z)
+
+        newChunks[x + y * this.size + z * this.size*this.size] = chunk
+        // chunk.script.chunk.highlight()
+    }
+
+
+    this.chunks = newChunks
 }
 
 Environment.prototype.rotateCol = function(target) {
@@ -148,29 +202,6 @@ Environment.prototype.rotateCol = function(target) {
 
     const euler = this.rotator.getLocalEulerAngles()
     this.tween = this.rotator.tween(euler)
-    this.tween.rotate(new pc.Vec3(euler.x + 90, euler.y, euler.z), 1, pc['cubicOut'])
-        .on('complete', function() {
-            this.tween = null
-
-            this.clearRotator()
-
-            const newChunks = []
-
-            const scale = GP.environment.chunkScale
-
-            for (let i = 0; i < this.chunks.length; i++) {
-                const chunk = this.chunks[i]
-                if (!chunk) continue
-
-                const pos = chunk.getPosition()
-                const x = Math.floor((pos.x - scale/2 + (this.size*scale)/2) / scale)
-                const y = Math.floor((pos.y - scale/2 + (this.size*scale)) / scale)
-                const z = Math.floor((pos.z - scale/2 + (this.size*scale)/2) / scale)
-
-                newChunks[x + y * this.size + z * this.size*this.size] = chunk
-            }
-
-            this.chunks = newChunks
-
-        }, this).start()
+    this.tween.rotate(new pc.Vec3(euler.x + 90, euler.y, euler.z), 1, pc['BackOut'])
+        .on('complete', this._finishTween, this).start()
 }

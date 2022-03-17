@@ -48,7 +48,10 @@ var MessageType = {
   THROW: 'THROW',
   PLAYER_REMOVE: 'PLAYER_REMOVE',
   PLAYER_ADD: 'PLAYER_ADD',
-  SNAPSHOT: 'SNAPSHOT'
+  SNAPSHOT: 'SNAPSHOT',
+  ROTATE_WARNING: 'ROTATE_WARNING',
+  ROTATE_START: 'ROTATE_START',
+  ROTATE_END: 'ROTATE_END'
 };
 var ActorType = {
   UNKNOWN: 'UNKNOWN',
@@ -108,8 +111,11 @@ var GP = {
   },
   environment: {
     size: 5,
-    chunkScale: 4,
-    rotateFrequency: 5
+    chunkScale: 3,
+    rotateFrequency: 3.5,
+    rotateWarnings: 2,
+    rotateWarningTime: 0.8,
+    rotateTime: 1.5
   }
 };
 
