@@ -21,6 +21,10 @@ VisualPlayer.prototype.start = function(startX, startZ, isSelf) {
         }
     }
 
+    if (isSelf) {
+        Singleton.session.camera.assignTarget(this.entity)
+    }
+
     this.lastPos = new pc.Vec3(startX, 0, startZ)
     this.entity.setPosition(startX, 0, startZ)
 }
@@ -40,6 +44,4 @@ VisualPlayer.prototype.manualUpdate = function(nextX, nextZ) {
 
     this.entity.setPosition(currentPos)
     this.lastPos.set(nextX, 0, nextZ)
-
-
 }

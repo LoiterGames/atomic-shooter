@@ -8,67 +8,90 @@ CamLook.attributes.add('setup', {
     type : 'json', array : true,
     schema : [
         {name : 'target', type : 'entity'},
-        {name : 'boom', type : 'vec3'},
+        {name : 'fov', type : 'number'},
+        {name : 'normalizedOffset', type : 'vec3'},
+        {name : 'boom', type : 'number'},
         {name : 'maxDistance', type : 'vec3'},
         {name : 'speedCurve', type : 'curve'},
         {name : 'speed', type : 'vec2'},
     ]
 })
 
-CamLook.prototype.start = function() {
-    this.switchToGameCamera()
+/**
+ * @param value {Entity}
+ */
+CamLook.prototype.assignTarget = function(value) {
+    this.target = value
+    this.selected = this.default
+
+    // this.entity.lookAt(this.target.getPosition())
+    this.resetCameraView()
 }
 
 CamLook.prototype.postInitialize = function() {
-    if (this.autoStart) {
-        this.switchToGameCamera()
-    }
-
-    // Singleton.composer
+    this.on('attr:setup', function(value) {
+        this.resetCameraView()
+    })
 }
 
 CamLook.prototype.resetCameraView = function() {
     var tp = this.target.getPosition()
     var self = this.entity.getPosition()
     
-    var toGo = new pc.Vec3().add2(tp, this.boom)
+    var toGo = new pc.Vec3().add2(tp, this.setup[this.selected].normalizedOffset.clone().normalize().mulScalar(this.setup[this.selected].boom))
     this.entity.setPosition(toGo.x, toGo.y, toGo.z)
+
+    this.entity.camera.fov = this.setup[this.selected].fov
+
     this.entity.lookAt(this.target.getPosition())
-    
-    this.started = true
 }
 
-CamLook.prototype.switchToGameCamera = function() {
-    var cam = this.gameCamera.camera
-    var look = this.gameCamera.script.camLook
+// CamLook.prototype.switchToGameCamera = function() {
+//     var cam = this.gameCamera.camera
+//     var look = this.gameCamera.script.camLook
+//
+//     this.assignCameraParams(cam, look)
+// }
+//
+// CamLook.prototype.switchToDebugCamera = function() {
+//     var cam = this.debugCamera.camera
+//     var look = this.debugCamera.script.camLook
 
-    this.assignCameraParams(cam, look)
-}
+//
+//     this.assignCameraParams(cam, look)
+// }
 
-CamLook.prototype.switchToDebugCamera = function() {
-    var cam = this.debugCamera.camera
-    var look = this.debugCamera.script.camLook
-
-    this.assignCameraParams(cam, look)
-}
-
-CamLook.prototype.assignCameraParams = function(fromCam, fromLook) {
-    this.entity.camera.projection = fromCam.projection
-    this.entity.camera.frustumCulling = fromCam.frustumCulling
-    this.entity.camera.fov = fromCam.fov
-    this.entity.camera.orthoHeight = fromCam.orthoHeight
-
-    this.boom = new pc.Vec3(fromLook.boom.x, fromLook.boom.y, fromLook.boom.z)
-
-    this.resetCameraView()
-}
+// CamLook.prototype.assignCameraParams = function(fromCam, fromLook) {
+//     this.entity.camera.projection = fromCam.projection
+//     this.entity.camera.frustumCulling = fromCam.frustumCulling
+//     this.entity.camera.fov = fromCam.fov
+//     this.entity.camera.orthoHeight = fromCam.orthoHeight
+//
+//     this.boom = new pc.Vec3(fromLook.boom.x, fromLook.boom.y, fromLook.boom.z)
+//
+//     this.resetCameraView()
+// }
 
 // update code called every frame
 CamLook.prototype.manualUpdate = function(dt) {
     
-    if (!this.started) return;
+    if (!this.target) return;
+
+    // {name : 'boom', type : 'vec3'},
+    // {name : 'maxDistance', type : 'vec3'},
+    // {name : 'speedCurve', type : 'curve'},
+    // {name : 'speed', type : 'vec2'},
+
+    /**
+     * @type {pc.Vec3}
+     */
+    const normalizedOffset = this.setup[this.selected].normalizedOffset.clone().normalize()
+    const boom = this.setup[this.selected].boom
+    const maxDistance = this.setup[this.selected].maxDistance
+    const speedCurve = this.setup[this.selected].speedCurve
+    const speed = this.setup[this.selected].speed
     
-    dt *= Helper.main.timeScale
+    // dt *= Helper.main.timeScale
     
     // this.entity.lookAt(this.lookAt.getPosition());
     // this.entity.lookAt(this.lookAt.getPosition());
@@ -81,22 +104,21 @@ CamLook.prototype.manualUpdate = function(dt) {
     
     var distance = new pc.Vec3().sub2(targetPos, selfPos)
     // console.log(new pc.Vec3().sub2(targetPos, selfPos))
-    distance = distance.add(this.boom)
-    
-    
+    distance = distance.add(normalizedOffset.mulScalar(boom))
+
     var distanceScalar = distance.length();
     
-    var distanceTX = Math.min(1, Math.abs(distance.x) / this.maxDistanceX)
-    var distanceTY = Math.min(1, Math.abs(distance.y) / this.maxDistanceY)
-    var distanceTZ = Math.min(1, Math.abs(distance.z) / this.maxDistanceZ)
+    var distanceTX = Math.min(1, Math.abs(distance.x) / maxDistance.x)
+    var distanceTY = Math.min(1, Math.abs(distance.y) / maxDistance.y)
+    var distanceTZ = Math.min(1, Math.abs(distance.z) / maxDistance.z)
     
-    var distanceTXCurve = this.fromToSpeedCurve.value(distanceTX)
-    var distanceTYCurve = this.fromToSpeedCurve.value(distanceTY)
-    var distanceTZCurve = this.fromToSpeedCurve.value(distanceTZ)
+    var distanceTXCurve = speedCurve.value(distanceTX)
+    var distanceTYCurve = speedCurve.value(distanceTY)
+    var distanceTZCurve = speedCurve.value(distanceTZ)
     
-    var speedX = pc.math.lerp(this.fromToSpeed.x, this.fromToSpeed.y, distanceTXCurve)
-    var speedY = pc.math.lerp(this.fromToSpeed.x, this.fromToSpeed.y, distanceTYCurve)
-    var speedZ = pc.math.lerp(this.fromToSpeed.x, this.fromToSpeed.y, distanceTZCurve)
+    var speedX = pc.math.lerp(speed.x, speed.y, distanceTXCurve)
+    var speedY = pc.math.lerp(speed.x, speed.y, distanceTYCurve)
+    var speedZ = pc.math.lerp(speed.x, speed.y, distanceTZCurve)
     // var nextMove = distance.normalize().scale(speed * dt)
     
     this.entity.setPosition(selfPos.x + speedX * dt * Helper.math.sign(distance.x), 

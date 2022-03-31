@@ -110,4 +110,6 @@ EntrySession.prototype.update = function(dt) {
 
         this.visualPlayers.get(id).manualUpdate(x, z)
     }
+
+    Singleton.session.camera.manualUpdate(dt)
 };
